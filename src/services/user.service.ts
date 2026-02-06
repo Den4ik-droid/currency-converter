@@ -1,33 +1,55 @@
-// временное хранилище до подключения БД
-const users = new Map<string, any>();
+import { supabase } from '../lib/supabase';
 
-export async function createUserIfNotExists(userId: string) {
-    if (!users.has(userId)) {
-        users.set(userId, {
+export async function getOrCreateUser(userId: string) {
+    // 1. Проверяем, есть ли пользователь
+    const { data: existingUser, error: selectError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+    if (selectError && selectError.code !== 'PGRST116') {
+        throw new Error(
+            'Ошибка при поиске пользователя: ' + selectError.message,
+        );
+    }
+
+    // Если пользователь найден — возвращаем
+    if (existingUser) {
+        return existingUser;
+    }
+
+    // 2. Создаём нового пользователя
+    const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert({
             user_id: userId,
             base_currency: 'USD',
             favorites: [],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-        });
+        })
+        .select()
+        .single();
+
+    if (insertError) {
+        throw new Error(
+            'Ошибка при создании пользователя: ' + insertError.message,
+        );
     }
+
+    return newUser;
 }
 
-export async function getUserById(userId: string) {
-    return users.get(userId);
-}
+export async function updateUserSettings(userId: string, settings: any) {
+    const { data, error } = await supabase
+        .from('users')
+        .update(settings)
+        .eq('user_id', userId)
+        .select()
+        .single();
 
-export async function updateUser(userId: string, data: any) {
-    const user = users.get(userId);
+    if (error) {
+        throw new Error('Ошибка при обновлении настроек: ' + error.message);
+    }
 
-    if (!user) return null;
-
-    const updated = {
-        ...user,
-        ...data,
-        updated_at: new Date().toISOString(),
-    };
-
-    users.set(userId, updated);
-    return updated;
+    return data;
 }

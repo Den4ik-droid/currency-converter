@@ -8,8 +8,10 @@
         "build": "tsc"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.95.3",
         "axios": "^1.13.4",
         "cookie-parser": "^1.4.7",
+        "dotenv": "^17.2.4",
         "express": "^4.22.1",
         "uuid": "^9.0.1"
     },

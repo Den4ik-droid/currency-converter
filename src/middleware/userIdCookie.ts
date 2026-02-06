@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuid } from 'uuid';
-import { createUserIfNotExists } from '../services/user.service';
+import { getOrCreateUser } from '../services/user.service';
 
 export async function userIdCookie(
     req: Request,
@@ -15,13 +15,14 @@ export async function userIdCookie(
         res.cookie('user_id', userId, {
             httpOnly: true,
             sameSite: 'lax',
-            secure: false, // можно сделать true, если HTTPS
+            secure: false,
         });
-
-        await createUserIfNotExists(userId);
     }
 
-    // прокидываем userId в req для удобства
+    // Создаём пользователя, если его нет
+    await getOrCreateUser(userId);
+
+    // Прокидываем userId в req
     (req as any).userId = userId;
 
     next();
