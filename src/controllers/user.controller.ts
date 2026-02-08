@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
-import { getUserById, updateUser } from '../services/user.service';
+import { getOrCreateUser, updateUserSettings } from '../services/user.service';
 
 export async function getUserSettings(req: Request, res: Response) {
     const userId = (req as any).userId;
-    const user = await getUserById(userId);
+    const user = await getOrCreateUser(userId);
     res.json(user);
 }
 
-export async function updateUserSettings(req: Request, res: Response) {
+export async function updateUserSettingsController(
+    req: Request,
+    res: Response,
+) {
     const userId = (req as any).userId;
-    const updated = await updateUser(userId, req.body);
+    const updated = await updateUserSettings(userId, req.body);
     res.json(updated);
 }
