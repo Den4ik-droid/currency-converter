@@ -16,7 +16,7 @@ export async function getCurrencies() {
         return cachedCurrencies;
     }
 
-    // Новый API
+    //  API frankfurter для курсов валют
     const response = await axios.get('https://api.frankfurter.app/currencies');
 
     const data = response.data;
