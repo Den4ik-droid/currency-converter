@@ -7,16 +7,17 @@ export async function userIdCookie(
     res: Response,
     next: NextFunction,
 ) {
-    let userId = req.cookies.user_id;
+    let userId = req.cookies?.user_id;
 
+    // Если куки нет — создаём новую
     if (!userId) {
         userId = uuid();
 
-        res.cookie('user_id', userId, {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: false,
-        });
+        // Устанавливаем куку вручную через Set-Cookie
+        res.setHeader(
+            'Set-Cookie',
+            `user_id=${userId}; HttpOnly; Path=/; Max-Age=31536000; SameSite=Lax`,
+        );
     }
 
     // Создаём пользователя, если его нет
