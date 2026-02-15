@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getRates } from '../controllers/rates.controller';
+import { getRatesController } from '../controllers/rates.controller';
 
 const router = Router();
 
-router.get('/', getRates);
+router.get('/', getRatesController);
 
 export default router;

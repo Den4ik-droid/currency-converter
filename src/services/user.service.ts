@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 export async function getOrCreateUser(userId: string) {
-    // 1. Проверяем, есть ли пользователь
+    // Проверяем, есть ли пользователь
     const { data: existingUser, error: selectError } = await supabase
         .from('users')
         .select('*')
@@ -19,7 +19,7 @@ export async function getOrCreateUser(userId: string) {
         return existingUser;
     }
 
-    // 2. Создаём нового пользователя
+    // Создаём нового пользователя
     const { data: newUser, error: insertError } = await supabase
         .from('users')
         .insert({
