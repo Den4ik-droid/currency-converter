@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: Currency Converter API
+  version: 1.0.0
+  description: API для конвертации валют с кэшированием (5 минут в памяти, 24 часа в БД)
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /api/user:
+    get:
+      summary: Получить настройки пользователя
+      tags:
+        - User
+      responses:
+        '200':
+          description: Настройки пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  base_currency:
+                    type: string
+                  favorites:
+                    type: array
+                    items:
+                      type: string
+
+    post:
+      summary: Обновить настройки пользователя
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                base_currency:
+                  type: string
+                favorites:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Обновлённые настройки
+
+  /api/currencies:
+    get:
+      summary: Получить список валют (кэш 1 час)
+      tags:
+        - Currencies
+      responses:
+        '200':
+          description: Список валют
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currencies:
+                    type: object
+
+  /api/rates:
+    get:
+      summary: Получить курсы валют (кэш 5 минут в памяти, 24 часа в БД)
+      tags:
+        - Rates
+      parameters:
+        - name: base
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Базовая валюта (если не указана — берётся из настроек пользователя)
+        - name: targets
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Список валют через запятую (например: EUR,GBP)
+      responses:
+        '200':
+          description: Курсы валют
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  base:
+                    type: string
+                  rates:
+                    type: object
